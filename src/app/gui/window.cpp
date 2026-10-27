@@ -173,8 +173,13 @@ public:
     explicit Studio(const std::string& home) {
         preview_ = make_texture();
         cell_texture_ = make_texture();
-        if (auto dir = install::azahar_user_dir()) azahar_.set(dir->string());
-        if (auto dir = install::zakuro_data_dir()) zakuro_.set(dir->string());
+        // an emulator gets a row only when it is installed here
+        auto installed = [](const std::optional<fs::path>& dir) {
+            std::error_code error;
+            return dir && fs::is_directory(*dir, error);
+        };
+        if (auto dir = install::azahar_user_dir(); installed(dir)) azahar_.emplace().set(dir->string());
+        if (auto dir = install::zakuro_data_dir(); installed(dir)) zakuro_.emplace().set(dir->string());
         recipe_.set((fs::current_path() / "wallpaper.kabegami").string());
         picture_.set((fs::current_path() / "wallpaper.png").string());
         if (!home.empty()) open(home);
@@ -430,8 +435,8 @@ private:
             ImGui::TextWrapped("This dump doesn't say its title. Open the CIA or CXI to install.");
         } else {
             ImGui::Text("for %s", install::title_folder(title_).c_str());
-            install_row("Azahar", azahar_, [&](const fs::path& dir) { return install::azahar_romfs(dir, title_); });
-            install_row("Zakuro", zakuro_, [&](const fs::path& dir) { return install::zakuro_romfs(dir, title_); });
+            if (azahar_) install_row("Azahar", *azahar_, [&](const fs::path& dir) { return install::azahar_romfs(dir, title_); });
+            if (zakuro_) install_row("Zakuro", *zakuro_, [&](const fs::path& dir) { return install::zakuro_romfs(dir, title_); });
             install_row("SD card", sd_, [&](const fs::path& dir) { return install::luma_romfs(dir, title_); });
             ImGui::TextDisabled("On a console, Luma3DS reads it with \"Enable game patching\" on.");
         }
@@ -473,7 +478,8 @@ private:
 
     Painter painter_;
     GLuint preview_ = 0, cell_texture_ = 0;
-    PathField home_, cell_, recipe_, picture_, azahar_, zakuro_, sd_;
+    PathField home_, cell_, recipe_, picture_, sd_;
+    std::optional<PathField> azahar_, zakuro_;
     Bytes original_;
     std::uint64_t title_ = 0;
     std::string described_, status_ = "Drop your HOME Menu dump on the window.";
