@@ -1,0 +1,10 @@
+/build*/
+/out/
+.cache/
+compile_commands.json
+# the HOME Menu files a user works on are theirs, never commit them
+*.cia
+*.cxi
+*.bcsdr
+*.shbin
+*_LZ.bin
