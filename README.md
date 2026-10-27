@@ -4,6 +4,11 @@ A wallpaper studio for the Nintendo 3DS HOME Menu, made for real consoles.
 It restyles the default top screen, the wall of drifting squares, on your
 own 3DS.
 
+<p align="center">
+  <img src="docs/images/squares.png" width="49%" alt="Kabegami's window, with the squares in red">
+  <img src="docs/images/waves.png" width="49%" alt="Kabegami's window, with the waves in pink">
+</p>
+
 Kabegami reads your console's own HOME Menu files and draws the wallpaper
 from them the way the console does. The model, material, camera, animations
 and vertex shader run through a software PICA200. Your changes go back into
